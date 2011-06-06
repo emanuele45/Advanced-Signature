@@ -1,0 +1,792 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+
+	<id>emanuele:advanced_signature</id>
+	<version>0.1.7</version>
+
+	<file name="$sourcedir/ModSettings.php">
+		<operation>
+			<search position="before"><![CDATA[
+			array('int', 'max_signatureLength'),]]></search>
+			<add><![CDATA[
+			array('int', 'max_numberofSignatures'),
+			array('large_text', 'default_signature', 10),
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$_POST['pm_spam_settings'] = (int) $_POST['max_pm_recipients'] . ',' . (int) $_POST['pm_posts_verification'] . ',' . (int) $_POST['pm_posts_per_hour'];
+]]></search>
+			<add><![CDATA[
+		// Check number of signatures.
+		$_POST['max_numberofSignatures'] = (isset($_POST['max_numberofSignatures']) && (int) $_POST['max_numberofSignatures'] > 0) ? (int) $_POST['max_numberofSignatures'] : 1;
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Load.php">
+		<operation>
+			<search position="replace"><![CDATA[
+			mem.realName, mem.emailAddress, mem.hideEmail, mem.dateRegistered, mem.websiteTitle, mem.websiteUrl,
+			mem.birthdate, mem.memberIP, mem.memberIP2, mem.ICQ, mem.AIM, mem.YIM, mem.MSN, mem.posts, mem.lastLogin,
+]]></search>
+			<add><![CDATA[
+			mem.realName, mem.emailAddress, mem.hideEmail, mem.random_signature, mem.dateRegistered, mem.websiteTitle, mem.websiteUrl,
+			mem.birthdate, mem.memberIP, mem.memberIP2, mem.ICQ, mem.AIM, mem.YIM, mem.MSN, mem.posts, mem.lastLogin,
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+			mem.realName, mem.emailAddress, mem.hideEmail, mem.dateRegistered, mem.websiteTitle, mem.websiteUrl,
+			mem.birthdate, mem.ICQ, mem.AIM, mem.YIM, mem.MSN, mem.posts, mem.lastLogin, mem.karmaGood,
+]]></search>
+			<add><![CDATA[
+			mem.realName, mem.emailAddress, mem.hideEmail, mem.random_signature, mem.dateRegistered, mem.websiteTitle, mem.websiteUrl,
+			mem.birthdate, mem.ICQ, mem.AIM, mem.YIM, mem.MSN, mem.posts, mem.lastLogin, mem.karmaGood,
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'signature' => &$profile['signature'],]]></search>
+			<add><![CDATA[
+		'random_signature' => &$profile['random_signature'],
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Subs.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+			<add><![CDATA[
+function mod_stripSignatures($sign_t, $id=false) {
+	global $modav_member, $modSettings;
+
+	if(empty($sign_t) && !empty($modSettings['default_signature']) && isset($modav_member))
+		$sign_t = str_replace(array(
+													'{USERNAME}',
+													'{NAME}',
+													'{PROFILE_HREF}',
+													'{WEBSITE_HREF}',
+													'{WEBSITE_TITLE}',
+												),
+												array(
+													$modav_member['username'],
+													$modav_member['name'],
+													$modav_member['href'],
+													$modav_member['website']['url'],
+													$modav_member['website']['title'],
+													), $modSettings['default_signature']);
+
+	$signs = explode('[ENDOFSIGNATURE]', $sign_t);
+	$signs=array_filter($signs);
+
+	if($id!==false){
+		if(isset($signs[$id])){
+			return $signs[$id];}
+		else{
+			return $signs(0);}
+	} else {
+		return $signs;
+	}
+}
+
+function mod_countSignatures() {
+	$signs = mod_getSignatures();
+	return count($signs);
+}
+
+function mod_getSignatures($member = false) {
+	global $db_prefix, $ID_MEMBER;
+
+	$member = !empty($member['id']) ? $member['id'] : $ID_MEMBER;
+	$request = db_query("
+		SELECT signature
+		FROM {$db_prefix}members
+		WHERE ID_MEMBER = " . $member . "
+		LIMIT 1", __FILE__, __LINE__);
+	$row = mysql_fetch_assoc($request);
+	mysql_free_result($request);
+	return mod_stripSignatures($row['signature']);
+}
+
+function mod_getSignatureID($name){
+	if($name=='nosignature'){
+		return -2;
+	} elseif($name=='randomsignature') {
+		return -1;
+	} else {
+		$signs = mod_countSignatures();
+		for($i=0;$i<$signs;$i++){
+			if($name=='signature_'.$i){
+				return $i;
+			}
+		}
+		return 0;
+	}
+}
+
+function mod_getSignatureByID($ID, $member = false){
+	global $modav_member;
+	if(!empty($member)){
+		$modav_member['username'] = $member['username'];
+		$modav_member['name'] = $member['name'];
+		$modav_member['href'] = empty($member['href']) ? '' : $member['href'];
+		$modav_member['website']['url'] = empty($member['website']['url']) ? '' : $member['website']['url'];
+		$modav_member['website']['title'] = empty($member['website']['title']) ? '' : $member['website']['title'];
+	}
+
+
+	$signs = mod_getSignatures($member);
+
+	if(empty($signs))
+		return '';
+
+	if($ID==-2){
+		return '';
+	} elseif ($ID==-1){
+		return parse_bbc($signs[rand(0,count($signs)-1)]);
+	} elseif ($ID<count($signs)){
+		return parse_bbc($signs[$ID]);
+	} else {
+		return parse_bbc($signs[0]);
+	}
+}
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Display.php">
+		<operation>
+			<search position="replace"><![CDATA[
+				smileysEnabled, posterName, posterEmail,
+]]></search>
+			<add><![CDATA[
+				smileysEnabled, posterName, posterEmail, signature_id,
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$memberContext[$message['ID_MEMBER']]['is_topic_starter'] = $message['ID_MEMBER'] == $context['topic_starter_id'];]]></search>
+			<add><![CDATA[
+		if($memberContext[$message['ID_MEMBER']]['random_signature']==-2){
+			$message['signature_id']=-2;}
+		elseif($memberContext[$message['ID_MEMBER']]['random_signature']==-1 && $message['signature_id']!=-2){
+			$message['signature_id']=-1;}
+		else{
+			$message['signature_id']=$message['signature_id'];}
+		$memberContext[$message['ID_MEMBER']]['signature'] = mod_getSignatureByID($message['signature_id'],$memberContext[$message['ID_MEMBER']]);]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Profile.php">
+		<operation>
+			<search position="replace"><![CDATA[
+	// Make sure the signature isn't too long.
+	if (isset($_POST['signature']))
+	{
+		require_once($sourcedir . '/Subs-Post.php');
+
+		if (!empty($modSettings['max_signatureLength']) && $func['strlen']($_POST['signature']) > $modSettings['max_signatureLength'])
+			$_POST['signature'] = addslashes($func['substr'](stripslashes($_POST['signature']), 0, $modSettings['max_signatureLength']));
+
+		if (strlen($_POST['signature']) > 65534)
+			$_POST['signature'] = addslashes($func['truncate'](stripslashes($_POST['signature']), 65534));
+
+		$_POST['signature'] = strtr($_POST['signature'], array('&quot;' => '\\&quot;', '&#039;' => '\\&#39;', '&#39;' => '\\&#39;'));
+		preparsecode($_POST['signature']);
+	}
+]]></search>
+			<add><![CDATA[
+	// Make sure the signature isn't too long.
+	if (isset($_POST['signature'])){
+		$_POST['signature']='';
+		require_once($sourcedir . '/Subs-Post.php');
+		for ($i=0; $i<$modSettings['max_numberofSignatures']; $i++){
+			if (isset($_POST['signature_' . $i]) && !($_POST['signature_' . $i]==""))// || !empty($_POST['signature_' . $i]))
+			{
+
+				if (!empty($modSettings['max_signatureLength']) && $func['strlen']($_POST['signature_' . $i]) > $modSettings['max_signatureLength'])
+					$_POST['signature_' . $i] = addslashes($func['substr'](stripslashes($_POST['signature_' . $i]), 0, $modSettings['max_signatureLength']));
+				$_POST['signature'] .= $_POST['signature_' . $i] . '[ENDOFSIGNATURE]';
+			}
+		}
+		$_POST['signature'] = substr($_POST['signature'], 0, -16);
+		if (strlen($_POST['signature']) > 65534)
+			$_POST['signature'] = addslashes($func['truncate'](stripslashes($_POST['signature']), 65534));
+
+		$_POST['signature'] = strtr($_POST['signature'], array('&quot;' => '\\&quot;', '&#039;' => '\\&#39;', '&#39;' => '\\&#39;'));
+		preparsecode($_POST['signature']);
+
+		$profile_vars['random_signature'] = empty($_POST['random_signature']) ? 0 : $_POST['random_signature'];
+	}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'hide_email' => empty($user_profile[$memID]['hideEmail']) ? 0 : $user_profile[$memID]['hideEmail'],]]></search>
+			<add><![CDATA[
+		'random_signature' => empty($user_profile[$memID]['random_signature']) ? 0 : $user_profile[$memID]['random_signature'],
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'signature' => !isset($user_profile[$memID]['signature']) ? '' : str_replace(array('<br />', '<', '>', '"', '\''), array("\n", '&lt;', '&gt;', '&quot;', '&#039;'), $user_profile[$memID]['signature']),
+	);]]></search>
+			<add><![CDATA[
+	$context['member']['signature'] = mod_stripSignatures($context['member']['signature']);
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+	$context['member'] = &$memberContext[$memID];]]></search>
+			<add><![CDATA[
+	$context['member']['signature'] = mod_stripSignatures($context['member']['signature']);
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'hide_email' => empty($_POST['hideEmail']) ? 0 : 1,]]></search>
+			<add><![CDATA[
+		'random_signature' => empty($_POST['random_signature']) ? 0 : $_POST['random_signature'],
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/Profile.template.php">
+		<operation>
+			<search position="replace"><![CDATA[
+	echo '
+							<tr>
+								<td width="40%" valign="top">
+									<b>', $txt[85], ':</b>
+									<div class="smalltext">', $txt[606], '</div><br />
+									<br />';
+
+	if ($context['show_spellchecking'])
+		echo '
+									<input type="button" value="', $txt['spell_check'], '" onclick="spellCheck(\'creator\', \'signature\');" />';
+
+	echo '
+								</td>
+								<td>
+									<textarea class="editor" onkeyup="calcCharLeft();" name="signature" rows="5" cols="50">', $context['member']['signature'], '</textarea><br />';
+
+	// If there is a limit at all!
+	if (!empty($context['max_signature_length']))
+		echo '
+									<span class="smalltext">', $txt[664], ' <span id="signatureLeft">', $context['max_signature_length'], '</span></span>';
+
+	// Load the spell checker?
+	if ($context['show_spellchecking'])
+]]></search>
+			<add><![CDATA[
+	echo '
+							<tr>
+								<td width="40%" valign="top">
+									<input type="hidden" name="signature" value="1" />';
+
+	for ($i=0; $i<$modSettings['max_numberofSignatures']; $i++){
+		echo '' , ($i>0) ? '
+								<td width="40%" valign="top">' : '' ,'
+									<b>', $txt[85], ' ' . ($i+1) . ':</b>
+									<div class="smalltext">', $txt[606], '</div><br />
+									<br />';
+
+		if ($context['show_spellchecking'])
+			echo '
+									<input type="button" value="', $txt['spell_check'], '" onclick="spellCheck(\'creator\', \'signature_' . $i . '\');" />';
+
+		echo '
+								</td>
+								<td>
+									<textarea class="editor" onkeyup="calcCharLeft' , $i , '();" name="signature_' , $i , '" rows="5" cols="50">', isset($context['member']['signature'][$i]) ? $context['member']['signature'][$i] : '' , '</textarea><br />';
+
+		// If there is a limit at all!
+		if (!empty($context['max_signature_length']))
+			echo '
+									<span class="smalltext">', $txt[664], ' <span id="signatureLeft_' . $i . '">', $context['max_signature_length'], '</span></span>';
+
+		// Load the spell checker?
+		if ($context['show_spellchecking'] && $i==0)
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+										function tick()
+										{
+											if (typeof(document.forms.creator) != "undefined")
+											{
+												calcCharLeft();
+												setTimeout("tick()", 1000);
+											}
+											else
+												setTimeout("tick()", 800);
+										}
+
+										function calcCharLeft()
+										{
+											var maxLength = ', $context['max_signature_length'], ';
+											var oldSignature = "", currentSignature = document.forms.creator.signature.value;
+
+											if (!document.getElementById("signatureLeft"))
+												return;
+
+											if (oldSignature != currentSignature)
+											{
+												oldSignature = currentSignature;
+
+												if (currentSignature.replace(/\r/, "").length > maxLength)
+													document.forms.creator.signature.value = currentSignature.replace(/\r/, "").substring(0, maxLength);
+												currentSignature = document.forms.creator.signature.value.replace(/\r/, "");
+											}
+
+											setInnerHTML(document.getElementById("signatureLeft"), maxLength - currentSignature.length);
+										}
+
+										setTimeout("tick()", 800);
+]]></search>
+			<add><![CDATA[
+										function tick' . $i . '()
+										{
+											if (typeof(document.forms.creator) != "undefined")
+											{
+												calcCharLeft' . $i . '();
+												setTimeout("tick' . $i . '()", 1000);
+											}
+											else
+												setTimeout("tick' . $i . '()", 800);
+										}
+
+										function calcCharLeft' . $i . '()
+										{
+											var maxLength = ', $context['max_signature_length'], ';
+											var oldSignature = "", currentSignature = document.forms.creator.signature_' . $i . '.value;
+
+											if (!document.getElementById("signatureLeft_' . $i . '"))
+												return;
+
+											if (oldSignature != currentSignature)
+											{
+												oldSignature = currentSignature;
+
+												if (currentSignature.replace(/\r/, "").length > maxLength)
+													document.forms.creator.signature_' . $i . '.value = currentSignature.replace(/\r/, "").substring(0, maxLength);
+												currentSignature = document.forms.creator.signature_' . $i . '.value.replace(/\r/, "");
+											}
+
+											setInnerHTML(document.getElementById("signatureLeft_' . $i . '"), maxLength - currentSignature.length);
+										}
+
+										setTimeout("tick' . $i . '()", 800);
+]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+	// Website details.
+	echo '
+							<tr>
+								<td colspan="2"><hr width="100%" size="1" class="hrcolor" /></td>
+]]></search>
+			<add><![CDATA[
+	}
+
+	echo '
+							<tr>
+								<td width="40%"><b>', $txt['choose_signature'], '</b></td>
+								<td>
+									<select name="random_signature">
+										<option value="0"', $context['member']['random_signature']==0 ? ' selected="selected"' : '', '>', $txt['normal_signature'], '</option>
+										<option value="-1"', $context['member']['random_signature']==-1 ? ' selected="selected"' : '', '>', $txt['randomsignature'], '</option>
+										<option value="-2"', $context['member']['random_signature']==-2 ? ' selected="selected"' : '', '>', $txt['nosignature'], '</option>
+									</select>
+								</td>
+							</tr>';
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	// Show the users signature.
+	echo '
+				<tr>
+					<td colspan="2" height="25">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed;">
+							<tr>
+								<td style="padding-bottom: 0.5ex;"><b>', $txt[85], ':</b></td>
+							</tr><tr>
+								<td colspan="2" width="100%" class="smalltext"><div class="signature">', $context['member']['signature'], '</div></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>';
+]]></search>
+			<add><![CDATA[
+	// Show the users signature.
+	echo '
+				<tr>
+					<td colspan="2" height="25">';
+
+	for ($i=0; $i<count($context['member']['signature']) && $i<$modSettings['max_numberofSignatures']; $i++){
+		echo '' , ($i>0) ? '
+				<tr>
+					<td colspan="2" height="25">' : '' ,'
+						<table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed;">
+							<tr>
+								<td style="padding-bottom: 0.5ex;"><b>', $txt[85], ' ' . ($i+1) . ':</b></td>
+							</tr><tr>
+								<td colspan="2" width="100%" class="smalltext"><div class="signature">', $context['member']['signature'][$i], '</div></td>
+							</tr>
+						</table>
+					</td>
+				</tr>';
+	}
+	echo '
+			</table>
+		</td>';
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Post.php">
+		<operation>
+			<search position="after"><![CDATA[
+	// Check if it's locked.  It isn't locked if no topic is specified.
+]]></search>
+			<add><![CDATA[
+		// Get the list of available signatures for the user
+		$signs = mod_countSignatures();
+		if($signs > 0){
+			$context['show_avail_signatures'] = isset($_REQUEST['msg']) ? ($poster_ID == $user_info['id']) : 1;
+			$signature_id = isset($_REQUEST['msg']) ? $signature_id : null;
+			$chosen_signature = isset($_POST['multiplesignatures']) ? $_POST['multiplesignatures'] : 'signature_0';
+			$context['stored_signature'] = isset($signature_id) ? $signature_id : 0;
+			$context['avail_signatures'][-2] = array(
+						'name' 	=> 'nosignature',
+						'label' 	=> $txt['nosignature'],
+						'selected' 	=> ($chosen_signature=='nosignature' || $signature_id==-2 ? 1 : 0)
+						);
+			$context['avail_signatures'][-1] = array(
+						'name' 	=> 'randomsignature',
+						'label' 	=> $txt['randomsignature'],
+						'selected' 	=> ($chosen_signature=='randomsignature' || $signature_id==-1 ? 1 : 0)
+						);
+			for($i=0;$i<$signs;$i++){
+				$context['avail_signatures'][$i] = array(
+			    'name' 	=> 'signature_' . $i,
+			    'label' 	=> $txt['signature'] . ' ' . ($i+1),
+			    'selected' 	=> ($chosen_signature=='signature_' . $i || $signature_id==$i ? 1 : 0)
+			    );
+			}
+		}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'attachments' => empty($attachIDs) ? array() : $attachIDs,]]></search>
+			<add><![CDATA[
+		'signature_id' => (isset($_POST['multiplesignatures']) ? mod_getSignatureID($_POST['multiplesignatures']) : (isset($_POST['stored_signature']) ? $_POST['stored_signature'] : 0)),
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+				t.ID_FIRST_MSG, mf.subject, GREATEST(ml.posterTime, ml.modifiedTime) AS lastPostTime
+]]></search>
+			<add><![CDATA[
+				t.ID_FIRST_MSG, mf.subject". (isset($_REQUEST['msg']) ? ', cm.ID_MEMBER, cm.signature_id' : '') . ", GREATEST(ml.posterTime, ml.modifiedTime) AS lastPostTime
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				LEFT JOIN {$db_prefix}messages AS ml ON (ml.ID_MSG = t.ID_LAST_MSG)]]></search>
+			<add><![CDATA[
+				" . (isset($_REQUEST['msg']) ? "
+				LEFT JOIN {$db_prefix}messages AS cm ON (cm.ID_MSG = $_REQUEST[msg])" : '') . "
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+		list ($locked, $context['notify'], $sticky, $pollID, $context['num_replies'], $ID_MEMBER_POSTER, $ID_FIRST_MSG, $first_subject, $lastPostTime) = mysql_fetch_row($request);
+]]></search>
+			<add><![CDATA[
+		if(isset($_REQUEST['msg'])){
+				list ($locked, $context['notify'], $sticky, $pollID, $context['num_replies'], $ID_MEMBER_POSTER, $ID_FIRST_MSG, $first_subject, $poster_ID, $signature_id, $lastPostTime) = mysql_fetch_row($request);
+		} else {
+				list ($locked, $context['notify'], $sticky, $pollID, $context['num_replies'], $ID_MEMBER_POSTER, $ID_FIRST_MSG, $first_subject, $lastPostTime) = mysql_fetch_row($request);
+		}
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/Post.template.php">
+		<operation>
+			<search position="after"><![CDATA[
+	// Finally, the submit buttons.
+]]></search>
+			<add><![CDATA[
+	// Show the available signatures for the user...unless it's not the post's author
+	if(!empty($context['show_avail_signatures'])){
+		echo '
+							<tr id="multiplesignatures">
+								<td align="right" valign="top">
+									<b>' . $txt['signature'] . ':</b>
+								</td>
+
+								<td>
+									<select name="multiplesignatures">';
+		foreach($context['avail_signatures'] as $sign){
+			echo '
+										<option value="' . $sign['name'] . '"' . (($sign['selected']) ? '  selected="selected"' : '') . '>' . $sign['label'] . '</option>';
+		}
+		echo '
+									</select>
+								</td>
+							</tr>';
+	}elseif(isset($context['stored_signature'])){
+		echo '
+							<tr id="multiplesignatures">
+								<td></td>
+								<td>
+									<input type="hidden" name="stored_signature" value="', $context['stored_signature'], '" />
+								</td>
+							</tr>';
+	}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				if (document.getElementById("postAttachment2"))
+					document.getElementById("postAttachment2").style.display = currentSwap ? "" : "none";
+]]></search>
+			<add><![CDATA[
+				if (document.getElementById("multiplesignatures"))
+					document.getElementById("multiplesignatures").style.display = currentSwap ? "" : "none";
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Subs-Post.php">
+		<operation>
+			<search position="before"><![CDATA[
+	if (isset($msgOptions['smileys_enabled']))
+		$messages_columns[] = "smileysEnabled = " . (empty($msgOptions['smileys_enabled']) ? '0' : '1');
+]]></search>
+			<add><![CDATA[
+	if (isset($msgOptions['signature_id']))
+		$messages_columns[] = "signature_id = " . (empty($msgOptions['signature_id']) ? '0' : $msgOptions['signature_id']);
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+	$msgOptions['attachments'] = empty($msgOptions['attachments']) ? array() : $msgOptions['attachments'];]]></search>
+			<add><![CDATA[
+	$msgOptions['signature_id'] = empty($msgOptions['signature_id']) ? 0 : $msgOptions['signature_id'];
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+			(ID_BOARD, ID_TOPIC, ID_MEMBER, subject, body, posterName, posterEmail, posterTime,
+			posterIP, smileysEnabled, modifiedName, icon)
+		VALUES ($topicOptions[board], $topicOptions[id], $posterOptions[id], SUBSTRING('$msgOptions[subject]', 1, 255), SUBSTRING('$msgOptions[body]', 1, 65534), SUBSTRING('$posterOptions[name]', 1, 255), SUBSTRING('$posterOptions[email]', 1, 255), " . time() . ",
+			SUBSTRING('$posterOptions[ip]', 1, 255), " . ($msgOptions['smileys_enabled'] ? '1' : '0') . ", '', SUBSTRING('$msgOptions[icon]', 1, 16))", __FILE__, __LINE__);
+]]></search>
+			<add><![CDATA[
+			(ID_BOARD, ID_TOPIC, ID_MEMBER, subject, body, posterName, posterEmail, posterTime,
+			posterIP, smileysEnabled, modifiedName, icon, signature_id)
+		VALUES ($topicOptions[board], $topicOptions[id], $posterOptions[id], SUBSTRING('$msgOptions[subject]', 1, 255), SUBSTRING('$msgOptions[body]', 1, 65534), SUBSTRING('$posterOptions[name]', 1, 255), SUBSTRING('$posterOptions[email]', 1, 255), " . time() . ",
+			SUBSTRING('$posterOptions[ip]', 1, 255), " . ($msgOptions['smileys_enabled'] ? '1' : '0') . ", '', SUBSTRING('$msgOptions[icon]', 1, 16), $msgOptions[signature_id])", __FILE__, __LINE__);
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	global $db_prefix, $ID_MEMBER, $scripturl, $txt, $user_info, $language, $func, $modSettings]]></search>
+			<add><![CDATA[
+	global $db_prefix, $ID_MEMBER, $scripturl, $txt, $user_info, $language, $func, $modSettings, $context]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+			(ID_MEMBER_FROM, deletedBySender, fromName, msgtime, subject, body)
+		VALUES ($from[id], " . ($store_outbox ? '0' : '1') . ", SUBSTRING('$from[username]', 1, 255), " . time() . ", SUBSTRING('$htmlsubject', 1, 255), SUBSTRING('$htmlmessage', 1, 65534))", __FILE__, __LINE__);
+]]></search>
+			<add><![CDATA[
+			(ID_MEMBER_FROM, deletedBySender, fromName, msgtime, subject, body, signature_id)
+		VALUES ($from[id], " . ($store_outbox ? '0' : '1') . ", SUBSTRING('$from[username]', 1, 255), " . time() . ", SUBSTRING('$htmlsubject', 1, 255), SUBSTRING('$htmlmessage', 1, 65534), $context[signature_id])", __FILE__, __LINE__);
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$boarddir/index.php">
+		<operation>
+			<search position="before"><![CDATA[
+		'requestmembers' => array('Subs-Auth.php', 'RequestMembers'),]]></search>
+			<add><![CDATA[
+		'restoresignatures' => array('Admin.php', 'restoreSignatures'),
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Admin.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+			<add><![CDATA[
+function restoreSignatures() {
+	global $db_prefix, $txt, $context, $scripturl;
+
+	isAllowedTo('admin_forum');
+	      // Select it on the left.
+	      adminIndex('maintain_forum');
+
+	$timeout_limit = ini_get('default_socket_timeout');
+	$timeout_limit = !empty($timeout_limit) ? $timeout_limit : get_cfg_var('default_socket_timeout');
+	$start_time = time();
+	$current_time = time();
+
+	$request = db_query("SELECT COUNT( ID_MEMBER ) as members
+			      FROM `{$db_prefix}members`", __FILE__, __LINE__);
+	list($members) = mysql_fetch_row($request);
+	mysql_free_result($request);
+	$query_limit = 20;
+	$start = isset($_POST['startfrom']) ? $_POST['startfrom'] : 0;
+
+	//I would like to avoid server overloading, but I'm not exactely sure how, so...
+	//let's just stop a little bit before the timeout even if I'm resetting apache's counter
+	do {
+		// Just to make sure it doesn't time out.
+		if (function_exists('apache_reset_timeout'))
+			apache_reset_timeout();
+
+		$request = db_query("SELECT ID_MEMBER, signature
+				      FROM `{$db_prefix}members` LIMIT $start, $query_limit", __FILE__, __LINE__);
+		$updates = array();
+		while ($signs = mysql_fetch_assoc($request)){
+			db_query("UPDATE {$db_prefix}members 
+				  SET `signature` = '" . trim(mod_getSignatureByID(0, $signs['ID_MEMBER'])) . "' 
+				  WHERE ID_MEMBER = $signs[ID_MEMBER]", __FILE__, __LINE__);
+		}
+
+		mysql_free_result($request);
+		$start += $query_limit;
+
+		//It's over we don't have any other member, let's go back to the maintenance page.
+		if($start>$members)
+			redirectexit('action=maintain');
+
+		$current_time = time();
+	} while (($current_time-$start_time)<($timeout_limit*0.90));
+
+	//limit server load...should I care?
+	$context['startfrom'] = $start;
+	$context['signature_missing'] = ($members - $start);
+	$context['sub_template'] = 'restore_signatures';
+}]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/Admin.template.php">
+		<operation>
+			<search position="before"><![CDATA[
+					<a href="' . $scripturl . '?action=convertentities">' . $txt['entity_convert_title'] . '</a><br />' : '', ']]></search>
+			<add><![CDATA[
+					<a href="' . $scripturl . '?action=restoresignatures">' . $txt['restoresignatures'] . '</a><br />', ']]></add>
+		</operation>
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+			<add><![CDATA[
+function template_restore_signatures(){
+	global $scripturl, $context, $txt;
+
+	echo str_replace('[MISSING_SIGNATURES]', $context['signature_missing'], $txt['signatures_still_missing']);
+	echo '
+		<form action="' , $scripturl , '?action=restoresignatures" method="post" style="margin: 0;" name="signatureContinue" id="signatureContinue" />
+			<input type="hidden" name="startfrom" value="', (isset($context['startfrom']) ? (int) $context['startfrom'] : 0), '" />
+			<input type="submit" value="', $txt['signature_continue'], '" />
+		</form>';
+}
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/PersonalMessage.php">
+		<operation>
+			<search position="after"><![CDATA[
+	// We should probably cache this information for speed.
+]]></search>
+			<add><![CDATA[
+	$context['avail_signatures'][-2] = array(
+		    'name' 	=> 'nosignature',
+		    'label' 	=> $txt['nosignature'],
+		    'selected' 	=> (isset($_POST['multiplesignatures']) && $_POST['multiplesignatures']=='nosignature') ? 1 : 0
+		    );
+	$context['avail_signatures'][-1] = array(
+		    'name' 	=> 'randomsignature',
+		    'label' 	=> $txt['randomsignature'],
+		    'selected' 	=> (isset($_POST['multiplesignatures']) && $_POST['multiplesignatures']=='randomsignature') ? 1 : 0
+		    );
+
+	$signs = advsig_countSignatures();
+	for($i=0;$i<$signs;$i++){
+	$context['avail_signatures'][$i] = array(
+		    'name' 	=> 'signature_' . $i,
+		    'label' 	=> $txt['signature'] . ' ' . ($i+1),
+		    'selected' 	=> (isset($_POST['multiplesignatures']) && $_POST['multiplesignatures']=='signature_' . $i) ? 1 : 0
+		    );
+	}]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+			SELECT pm.ID_PM, pm.subject, pm.ID_MEMBER_FROM, pm.body, pm.msgtime, pm.fromName
+			FROM {$db_prefix}personal_messages AS pm" . ($context['folder'] == 'outbox' ? "
+]]></search>
+			<add><![CDATA[
+			SELECT pm.ID_PM, pm.subject, pm.ID_MEMBER_FROM, pm.body, pm.msgtime, pm.fromName, pm.signature_id
+			FROM {$db_prefix}personal_messages AS pm" . ($context['folder'] == 'outbox' ? "
+]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+		if (!empty($recipients['to']) || !empty($recipients['bcc']))]]></search>
+			<add><![CDATA[
+		$context['signature_id'] = (isset($_POST['multiplesignatures']) ? advsig_getSignatureID($_POST['multiplesignatures']) : $_POST['stored_signature']);]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+	// Censor all the important text...
+]]></search>
+			<add><![CDATA[
+		if($memberContext[$message['ID_MEMBER_FROM']]['random_signature']==-2){
+			$message['signature_id']=-2;}
+		elseif($memberContext[$message['ID_MEMBER_FROM']]['random_signature']==-1 && $message['signature_id']!=-2){
+			$message['signature_id']=-1;}
+		else{
+			$message['signature_id']=$message['signature_id'];}
+		$memberContext[$message['id_member_from']]['signature'] = advsig_getSignatureByID($message['signature_id'], $memberContext[$message['id_member_from']]);
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/PersonalMessage.template.php">
+		<operation>
+			<search position="after"><![CDATA[
+	// Send, Preview, spellcheck buttons.
+]]></search>
+			<add><![CDATA[
+
+	echo '
+							<tr id="multiplesignatures">
+								<td></td>
+
+								<td>
+									<select name="multiplesignatures">';
+	foreach($context['avail_signatures'] as $sign){
+		echo '
+										<option value="' . $sign['name'] . '"' . (($sign['selected']) ? '  selected="selected"' : '') . '>' . $sign['label'] . '</option>';
+	}
+	echo '
+									</select>
+								</td>
+							</tr>';]]></add>
+		</operation>
+	</file>
+
+</modification>

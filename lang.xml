@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+
+	<id>emanuele:advanced_signature</id>
+	<version>0.1.7</version>
+
+	<file name="$themedir/languages/Modifications.italian.php" error="skip">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+			<add><![CDATA[
+$txt['random_signature'] = 'Usa una firma casuale';
+$txt['signature'] = isset($txt['signature']) ? $txt['signature'] : 'Firma';
+$txt['nosignature'] = 'Nessuna firma';
+$txt['randomsignature'] = 'Firma casuale';
+$txt['restoresignatures'] = 'Reimposta una sola firma per utente';
+$txt['choose_signature'] = 'Scegli il tipo di firma da visualizzare';
+$txt['normal_signature'] = 'Firma normale';
+$txt['signatures_still_missing'] = 'Ci sono ancora [MISSING_SIGNATURES] firme da controllare.<br />Il processo è stato interrotto per evitare sovraccarico del server e eventuali timeout.';
+$txt['signature_continue'] = 'Continua';
+$txt['signatures_restored'] = 'Le firme di tutti gli utenti sono state convertite a firma singola';
+$txt['default_signature'] = 'Firma di default (utilizzata quando l\'utente non ne ha impostata una propria).<div class="smalltext">Vedere l\'help per dettagli sui segnaposto. Il BBcode è attivo</div>';
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/languages/Modifications.english.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+			<add><![CDATA[
+$txt['random_signature'] = 'Use a random signature';
+$txt['signature'] = isset($txt['signature']) ? $txt['signature'] : 'Signature';
+$txt['nosignature'] = 'No signature';
+$txt['randomsignature'] = 'Random signature';
+$txt['restoresignatures'] = 'Reset to single signature per user';
+$txt['choose_signature'] = 'Select the type of signature you want to show';
+$txt['normal_signature'] = 'Normal signature';
+$txt['signatures_still_missing'] = 'Sorry, there are still [MISSING_SIGNATURES] signatures to be checked.<br />The job has been stopped in order to avoid server overload and timeouts.';
+$txt['signature_continue'] = 'Continue';
+$txt['signatures_restored'] = 'All the users\' signatures has been restored to single signature';
+$txt['default_signature'] = 'Default signature (it will be used when members don\'t have their one signature).<div class="smalltext">See help for details on placeholders. BBCode is supported.</div>';
+]]></add>
+		</operation>
+	</file>
+</modification>
