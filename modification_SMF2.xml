@@ -3,7 +3,7 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 
 	<id>emanuele:advanced_signature</id>
-	<version>0.1.7</version>
+	<version>0.1.8</version>
 
 	<file name="$sourcedir/ManageSettings.php">
 		<operation>
@@ -171,6 +171,13 @@ foreach($signs as $sign){
 		'attachments' => empty($attachIDs) ? array() : $attachIDs,]]></search>
 			<add><![CDATA[
 		'signature_id' => (isset($_POST['multiplesignatures']) ? advsig_getSignatureID($_POST['multiplesignatures'], isset($row['id_member']) ? $row['id_member'] : $user_info['id']) : (isset($_POST['stored_signature']) ? $_POST['stored_signature'] : 0)),]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$context['becomes_approved'] = true;]]></search>
+			<add><![CDATA[
+		advsig_prepare_signatures(true);
+]]></add>
 		</operation>
 		<operation>
 			<search position="before"><![CDATA[
@@ -393,9 +400,9 @@ foreach($signs as $sign){
 									function calcCharLeft()
 									{
 										var maxLength = ', $context['signature_limits']['max_length'], ';
-										var oldSignature = "", currentSignature = document.forms.creator.signature', $i , '.value;
+										var oldSignature = "", currentSignature = document.forms.creator.signature.value;
 
-										if (!document.getElementById("signatureLeft_', $i , '"))
+										if (!document.getElementById("signatureLeft"))
 											return;
 
 										if (oldSignature != currentSignature)
@@ -403,11 +410,11 @@ foreach($signs as $sign){
 											oldSignature = currentSignature;
 
 											if (currentSignature.replace(/\r/, "").length > maxLength)
-												document.forms.creator.signature', $i , '.value = currentSignature.replace(/\r/, "").substring(0, maxLength);
-											currentSignature = document.forms.creator.signature', $i , '.value.replace(/\r/, "");
+												document.forms.creator.signature.value = currentSignature.replace(/\r/, "").substring(0, maxLength);
+											currentSignature = document.forms.creator.signature.value.replace(/\r/, "");
 										}
 
-										setInnerHTML(document.getElementById("signatureLeft_', $i , '"), maxLength - currentSignature.length);
+										setInnerHTML(document.getElementById("signatureLeft"), maxLength - currentSignature.length);
 									}
 
 									addLoadEvent(tick);
@@ -491,19 +498,21 @@ function template_profile_avatar_select()
 ]]></search>
 			<add><![CDATA[
 	// Show the available signatures for the poster
-	echo '
+	if(!empty($context['avail_signatures'])){
+		echo '
 					<dl id="multiplesignatures">
 						<dt>' . $txt['signature'] . ':</dt>
 						<dd>
 							<select name="multiplesignatures">';
-	foreach($context['avail_signatures'] as $sign){
-		echo '
+		foreach($context['avail_signatures'] as $sign){
+			echo '
 								<option value="' . $sign['name'] . '"' . (($sign['selected']) ? '  selected="selected"' : '') . '>' . $sign['label'] . '</option>';
-	}
-	echo '
+		}
+		echo '
 							</select>
 						</dd>
 					</dl>';
+	}
 ]]></add>
 		</operation>
 		<operation>

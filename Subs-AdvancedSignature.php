@@ -38,8 +38,9 @@ function advsig_stripSignatures($sign_t, $id=false) {
 }
 
 function advsig_countSignatures($member = false) {
-	global $context;
+	global $context, $user_info;
 
+	$member = !empty($member['id']) ? $member['id'] : $user_info['id'];
 	if(!isset($context['user_avail_signatures'][$member]))
 		advsig_getSignatures($member);
 
