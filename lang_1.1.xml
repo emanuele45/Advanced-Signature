@@ -3,11 +3,11 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 
 	<id>emanuele:advanced_signature</id>
-	<version>0.1.8</version>
+	<version>0.1.9</version>
 
 	<file name="$themedir/languages/Modifications.italian.php" error="skip">
 		<operation>
-			<search position="end"><![CDATA[?>]]></search>
+			<search position="end" />
 			<add><![CDATA[
 $txt['max_numberofSignatures'] = 'Numero massimo di firme consentite ad ogni utente<div class="smalltext">(Valore minimo consentito 1)<br />Attenzione: utilizzare l\'opzione nella <a href="' . $boardurl . '/index.php?action=maintain">pagina di manutenzione</a> per re-impostare ad una firma per utente prima di disinstallare</div>';
 ]]></add>
@@ -15,7 +15,7 @@ $txt['max_numberofSignatures'] = 'Numero massimo di firme consentite ad ogni ute
 	</file>
 	<file name="$themedir/languages/Help.italian.php" error="skip">
 		<operation>
-			<search position="end"><![CDATA[?>]]></search>
+			<search position="end" />
 			<add><![CDATA[
 global $ID_MEMBER;
 $helptxt['default_signature'] = '
@@ -33,7 +33,7 @@ $helptxt['default_signature'] = '
 
 	<file name="$themedir/languages/Modifications.english.php">
 		<operation>
-			<search position="end"><![CDATA[?>]]></search>
+			<search position="end" />
 			<add><![CDATA[
 $txt['max_numberofSignatures'] = 'Maximum allowed signatures per user<div class="smalltext">(not less than 1)<br />Please use the option in <a href="' . $boardurl . '/index.php?action=maintain">maintenance page</a> to reset to 1 signature per user before uninstall</div>';
 ]]></add>
@@ -41,7 +41,7 @@ $txt['max_numberofSignatures'] = 'Maximum allowed signatures per user<div class=
 	</file>
 	<file name="$themedir/languages/Help.english.php">
 		<operation>
-			<search position="end"><![CDATA[?>]]></search>
+			<search position="end" />
 			<add><![CDATA[
 global $ID_MEMBER;
 $helptxt['default_signature'] = '

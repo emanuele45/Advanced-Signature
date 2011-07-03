@@ -5,25 +5,25 @@
 	<id>emanuele:advanced_signature</id>
 	<version>0.1.9</version>
 
-	<file name="$themedir/languages/Modifications.italian.php" error="skip">
+	<file name="$themedir/languages/Modifications.italian-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-$txt['max_numberofSignatures'] = 'Numero massimo di firme consentite ad ogni utente<div class="smalltext">(Valore minimo consentito 1)<br />Attenzione: utilizzare l\'opzione nella <a href="' . $boardurl . '/index.php?action=admin;area=maintain;sa=members">pagina di manutenzione degli utenti</a> per re-impostare ad una firma per utente prima di disinstallare</div>';
+$txt['max_numberofSignatures'] = 'Numero massimo di firme consentite ad ogni utente<div class="smalltext">(Valore minimo consentito 1)<br />Attenzione: utilizzare l\'opzione nella <a href="' . $boardurl . '/index-UTF8.php?action=maintain">pagina di manutenzione</a> per re-impostare ad una firma per utente prima di disinstallare</div>';
 ]]></add>
 		</operation>
 	</file>
-	<file name="$themedir/languages/Help.italian.php" error="skip">
+	<file name="$themedir/languages/Help.italian-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-global $user_info;
+global $ID_MEMBER;
 $helptxt['default_signature'] = '
 <table>
 	<tr><th>segnaposto</th><th>sostituito da</th></tr>
 	<tr><td>{USERNAME}</td><td>Nome utente</td></tr>
 	<tr><td>{NAME}</td><td>Nome vero</td></tr>
-	<tr><td>{PROFILE_HREF}</td><td>URL del profilo<br />es. <pre>http://' . $scripturl . '?action=profile;u=' . $user_info['id'] . '</pre></td></tr>
+	<tr><td>{PROFILE_HREF}</td><td>URL del profilo<br />es. <pre>http://' . $scripturl . '?action=profile;u=' . $ID_MEMBER . '</pre></td></tr>
 	<tr><td>{WEBSITE_HREF}</td><td>URL del sito del membro</td></tr>
 	<tr><td>{WEBSITE_TITLE}</td><td>titolo del sito del membro</td></tr>
 </table>';
@@ -31,25 +31,25 @@ $helptxt['default_signature'] = '
 		</operation>
 	</file>
 
-	<file name="$themedir/languages/Modifications.english.php">
+	<file name="$themedir/languages/Modifications.english-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-$txt['max_numberofSignatures'] = 'Maximum allowed signatures per user<div class="smalltext">(not less than 1)<br />Please use the option in <a href="' . $boardurl . '/index.php?action=admin;area=maintain;sa=members">members\' maintenance page</a> to reset to 1 signature per user before uninstall</div>';
+$txt['max_numberofSignatures'] = 'Maximum allowed signatures per user<div class="smalltext">(not less than 1)<br />Please use the option in <a href="' . $boardurl . '/index-UTF8.php?action=maintain">maintenance page</a> to reset to 1 signature per user before uninstall</div>';
 ]]></add>
 		</operation>
 	</file>
-	<file name="$themedir/languages/Help.english.php">
+	<file name="$themedir/languages/Help.english-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-global $user_info;
+global $ID_MEMBER;
 $helptxt['default_signature'] = '
 <table>
 	<tr><th>placeholder</th><th>replaced by</th></tr>
 	<tr><td>{USERNAME}</td><td>Member username</td></tr>
 	<tr><td>{NAME}</td><td>Member real name</td></tr>
-	<tr><td>{PROFILE_HREF}</td><td>profile URL<br />e.g. <pre>http://' . $scripturl . '?action=profile;u=' . $user_info['id'] . '</pre></td></tr>
+	<tr><td>{PROFILE_HREF}</td><td>profile URL<br />e.g. <pre>http://' . $scripturl . '?action=profile;u=' . $ID_MEMBER . '</pre></td></tr>
 	<tr><td>{WEBSITE_HREF}</td><td>member\'s website URL</td></tr>
 	<tr><td>{WEBSITE_TITLE}</td><td>member\'s website title</td></tr>
 </table>';

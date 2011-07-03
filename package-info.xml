@@ -3,15 +3,15 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>emanuele:advanced_signature</id>
 	<name>Advanced Signature</name>
-	<version>0.1.8</version>
+	<version>0.1.9</version>
 	<type>modification</type>
-	<install for="1.1.12 - 1.1.13">
+	<install for="1.1.12 - 1.1.14">
 		<modification>modification.xml</modification>
 		<modification>lang.xml</modification>
 		<modification>lang_1.1.xml</modification>
 		<code>installScript.php</code>
 	</install>
-	<uninstall for="1.1.12 - 1.1.13">
+	<uninstall for="1.1.12 - 1.1.14">
 		<modification reverse="true">modification.xml</modification>
 		<modification reverse="true">lang.xml</modification>
 		<modification reverse="true">lang_1.1.xml</modification>
@@ -20,7 +20,7 @@
 Additionally, to completely remove any trace of the mod (including database entries), please use the uninstall script provided.</readme>
 	</uninstall>
 
-	<install for="2.0 RC5">
+	<install for="2.0">
 		<modification>modification_SMF2.xml</modification>
 		<modification>lang.xml</modification>
 		<modification>lang_2.0.xml</modification>
@@ -28,7 +28,7 @@ Additionally, to completely remove any trace of the mod (including database entr
 		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />
 		<redirect url="?action=admin;area=featuresettings;sa=sig" />
 	</install>
-	<uninstall for="2.0 RC5">
+	<uninstall for="2.0">
 		<modification reverse="true">modification_SMF2.xml</modification>
 		<modification reverse="true">lang.xml</modification>
 		<modification reverse="true">lang_2.0.xml</modification>

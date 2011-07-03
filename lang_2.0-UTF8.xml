@@ -5,15 +5,15 @@
 	<id>emanuele:advanced_signature</id>
 	<version>0.1.9</version>
 
-	<file name="$themedir/languages/Modifications.italian.php" error="skip">
+	<file name="$themedir/languages/Modifications.italian-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-$txt['max_numberofSignatures'] = 'Numero massimo di firme consentite ad ogni utente<div class="smalltext">(Valore minimo consentito 1)<br />Attenzione: utilizzare l\'opzione nella <a href="' . $boardurl . '/index.php?action=admin;area=maintain;sa=members">pagina di manutenzione degli utenti</a> per re-impostare ad una firma per utente prima di disinstallare</div>';
+$txt['max_numberofSignatures'] = 'Numero massimo di firme consentite ad ogni utente<div class="smalltext">(Valore minimo consentito 1)<br />Attenzione: utilizzare l\'opzione nella <a href="' . $boardurl . '/index-UTF8.php?action=admin;area=maintain;sa=members">pagina di manutenzione degli utenti</a> per re-impostare ad una firma per utente prima di disinstallare</div>';
 ]]></add>
 		</operation>
 	</file>
-	<file name="$themedir/languages/Help.italian.php" error="skip">
+	<file name="$themedir/languages/Help.italian-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
@@ -31,15 +31,15 @@ $helptxt['default_signature'] = '
 		</operation>
 	</file>
 
-	<file name="$themedir/languages/Modifications.english.php">
+	<file name="$themedir/languages/Modifications.english-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-$txt['max_numberofSignatures'] = 'Maximum allowed signatures per user<div class="smalltext">(not less than 1)<br />Please use the option in <a href="' . $boardurl . '/index.php?action=admin;area=maintain;sa=members">members\' maintenance page</a> to reset to 1 signature per user before uninstall</div>';
+$txt['max_numberofSignatures'] = 'Maximum allowed signatures per user<div class="smalltext">(not less than 1)<br />Please use the option in <a href="' . $boardurl . '/index-UTF8.php?action=admin;area=maintain;sa=members">members\' maintenance page</a> to reset to 1 signature per user before uninstall</div>';
 ]]></add>
 		</operation>
 	</file>
-	<file name="$themedir/languages/Help.english.php">
+	<file name="$themedir/languages/Help.english-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[

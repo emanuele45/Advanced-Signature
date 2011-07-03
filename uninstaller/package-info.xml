@@ -4,14 +4,14 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>emanuele:advanced_signature</id>
 	<name>Advanced Signature uninstall script</name>
-	<version>0.1.5</version>
+	<version>0.1.6</version>
 	<type>modification</type>
-	<install for="1.1.12 - 1.1.13">
+	<install for="1.1.*">
 		<readme type="inline" parsebbc="true">Please complete the install and procede with the uninstall, then delete the file.</readme>
 		<code>uninstall.php</code>
 	</install>
 
-	<uninstall for="1.1.12 - 1.1.13">
+	<uninstall for="1.1.*">
 		<readme type="inline" parsebbc="true">This is just a dummy uninstall, feel free to complete the process and delete the file.</readme>
 		<code>uninstall.php</code>
 	</uninstall>
