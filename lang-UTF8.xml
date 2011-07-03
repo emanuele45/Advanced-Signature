@@ -5,7 +5,7 @@
 	<id>emanuele:advanced_signature</id>
 	<version>0.1.9</version>
 
-	<file name="$themedir/languages/Modifications.italian-UTF8.php" error="skip">
+	<file name="$languagedir/Modifications.italian-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
@@ -24,7 +24,7 @@ $txt['default_signature'] = 'Firma di default (utilizzata quando l\'utente non n
 		</operation>
 	</file>
 
-	<file name="$themedir/languages/Modifications.english-UTF8.php" error="skip">
+	<file name="$languagedir/Modifications.english-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
