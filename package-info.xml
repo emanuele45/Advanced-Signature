@@ -3,18 +3,22 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>emanuele:advanced_signature</id>
 	<name>Advanced Signature</name>
-	<version>0.1.9</version>
+	<version>0.1.10</version>
 	<type>modification</type>
 	<install for="1.1.12 - 1.1.14">
 		<modification>modification.xml</modification>
 		<modification>lang.xml</modification>
+		<modification>lang-UTF8.xml</modification>
 		<modification>lang_1.1.xml</modification>
+		<modification>lang_1.1-UTF8.xml</modification>
 		<code>installScript.php</code>
 	</install>
 	<uninstall for="1.1.12 - 1.1.14">
 		<modification reverse="true">modification.xml</modification>
 		<modification reverse="true">lang.xml</modification>
+		<modification reverse="true">lang-UTF8.xml</modification>
 		<modification reverse="true">lang_1.1.xml</modification>
+		<modification reverse="true">lang_1.1-UTF8.xml</modification>
 		<readme type="inline" parsebbc="true">[b]Please note[/b] before uninstall the mod use the maintenance action provided by the mod to reset all the signatures for all the users to the SMF-original single signature per user.
 
 Additionally, to completely remove any trace of the mod (including database entries), please use the uninstall script provided.</readme>
@@ -23,7 +27,9 @@ Additionally, to completely remove any trace of the mod (including database entr
 	<install for="2.0">
 		<modification>modification_SMF2.xml</modification>
 		<modification>lang.xml</modification>
+		<modification>lang-UTF8.xml</modification>
 		<modification>lang_2.0.xml</modification>
+		<modification>lang_2.0-UTF8.xml</modification>
 		<database>installScript_SMF2.php</database>
 		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />
 		<redirect url="?action=admin;area=featuresettings;sa=sig" />
@@ -31,7 +37,9 @@ Additionally, to completely remove any trace of the mod (including database entr
 	<uninstall for="2.0">
 		<modification reverse="true">modification_SMF2.xml</modification>
 		<modification reverse="true">lang.xml</modification>
+		<modification reverse="true">lang-UTF8.xml</modification>
 		<modification reverse="true">lang_2.0.xml</modification>
+		<modification reverse="true">lang_2.0-UTF8.xml</modification>
 		<database reverse="true">installScript_SMF2.php</database>
 		<readme type="inline" parsebbc="true">[b]Pleae note[/b] before uninstall the mod please go to [i]Admin > Configuration > Features and Options > Signatures[/i], set the maximum number of signature to 1 and use SMF tool to apply rules to all existing signatures.</readme>
 		<remove-file name="$sourcedir/Subs-AdvancedSignature.php" />
