@@ -2,6 +2,56 @@
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
+/*
+ *
+ * Hooks
+ *
+ */
+
+function advsig_permissions(&$permissionGroups, &$permissionList, &$leftPermissionGroups, &$hiddenPermissions, &$relabelPermissions){
+	$permissionList['board']['hide_topic_signatures'] = array(false, 'topic', 'moderate');
+}
+
+function advsig_add_topic_button(&$mod_buttons) {
+	global $topicinfo, $context, $scripturl, $board_info;
+
+	if(!empty($board_info['disabled_signatures']))
+		return;
+
+	$mod_buttons['hide_sign'] = array(
+			'test' => 'hide_topic_signatures',
+			'text' => empty($topicinfo['disabled_signatures']) ? 'hide_sign' : 'unhide_sign',
+			'lang' => true,
+			'url' => $scripturl . '?action=hide_sign;topic=' . $context['current_topic'],
+	);
+}
+
+function advsig_add_modsettings(&$config_vars) {
+	global $modSettings;
+
+	if(!empty($modSettings['modlog_enabled']))
+		$config_vars[] = array('check', 'disable_log_hide_signature');
+}
+
+function advsig_set_modsettings() {
+	global $modSettings, $topicinfo, $context, $board, $topic;
+
+	$context['hide_topic_signatures'] = allowedTo('hide_topic_signatures');
+
+	if(substr($modSettings['signature_settings'], 0, 1) == 1)
+		$modSettings['signature_settings'] = substr_replace($modSettings['signature_settings'], !empty($topicinfo['disabled_signatures']) ? 0 : 1, 0, 1);
+}
+
+function advsig_create_action(&$actionArray) {
+	$actionArray['hide_sign'] = array('Subs-AdvancedSignature.php', 'advsig_disable_in_current_topic');
+}
+
+/*
+ *
+ * End of hooks
+ *
+ */
+
 function advsig_stripSignatures($sign_t, $id=false) {
 	global $modav_member, $modSettings;
 
@@ -145,6 +195,43 @@ function advsig_prepare_signatures($is_post = false, $poster_ID = false, $signat
 			'selected' 	=> ($chosen_signature=='signature_' . $i || $signature_id==$i ? 1 : 0)
 			);
 	}
+}
+
+function advsig_disable_in_current_topic() {
+	global $smcFunc, $topic, $board, $modSettings;
+
+	// A bit of copy and paste from function Sticky() (LockTopic.php)
+	isAllowedTo('hide_topic_signatures');
+
+	if(empty($topic))
+		fatal_lang_error('not_a_topic', false);
+
+	$request = $smcFunc['db_query']('', '
+		SELECT disabled_signatures
+		FROM {db_prefix}topics
+		WHERE id_topic = {int:current_topic}
+		LIMIT 1',
+		array(
+			'current_topic' => $topic,
+		)
+	);
+	list ($is_disabled) = $smcFunc['db_fetch_row']($request);
+	$smcFunc['db_free_result']($request);
+
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}topics
+		SET disabled_signatures = {int:is_disabled}
+		WHERE id_topic = {int:current_topic}',
+		array(
+			'current_topic' => $topic,
+			'is_disabled' => empty($is_disabled) ? 1 : 0,
+		)
+	);
+
+	if(!empty($modSettings['modlog_enabled']) && empty($modSettings['disable_log_hide_signature']))
+		logAction(empty($is_disabled) ? 'hide_sign' : 'unhide_sign', array('topic' => $topic, 'board' => $board));
+
+	redirectexit('topic=' . $topic . '.' . $_REQUEST['start'] . (WIRELESS ? ';moderate' : ''));
 }
 
 /* ADMIN */

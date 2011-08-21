@@ -3,7 +3,7 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 
 	<id>emanuele:advanced_signature</id>
-	<version>0.1.10</version>
+	<version>0.2.0</version>
 
 	<file name="$sourcedir/ManageSettings.php">
 		<operation>
@@ -54,9 +54,25 @@
 			<add><![CDATA[
 		'random_signature' => &$profile['random_signature'],]]></add>
 		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				b.id_parent, c.name AS cname, IFNULL(mem.id_member, 0) AS id_moderator,]]></search>
+			<add><![CDATA[ b.disabled_signatures,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				'cur_topic_starter' => empty($topic) ? 0 : $row['id_member_started'],]]></search>
+			<add><![CDATA[
+				'disabled_signatures' => !empty($row['disabled_signatures']),]]></add>
+		</operation>
 	</file>
 
 	<file name="$sourcedir/Display.php">
+		<operation>
+			<search position="before"><![CDATA[
+			t.id_member_started, t.id_first_msg, t.id_last_msg, t.approved, t.unapproved_posts,]]></search>
+			<add><![CDATA[ disabled_signatures,]]></add>
+		</operation>
 		<operation>
 			<search position="before"><![CDATA[
 				smileys_enabled, poster_name, poster_email, approved,]]></search>
@@ -73,6 +89,73 @@
 		else{
 			$message['signature_id']=$message['signature_id'];}
 		$memberContext[$message['id_member']]['signature'] = advsig_getSignatureByID($message['signature_id'],$memberContext[$message['id_member'] ]);]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	$context['signature_enabled'] = substr($modSettings['signature_settings'], 0, 1) == 1;
+]]></search>
+			<add><![CDATA[
+	$context['signature_enabled'] = substr($modSettings['signature_settings'], 0, 1) == 1 && empty($board_info['disabled_signatures']) && empty($topicinfo['disabled_signatures']);
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/ManageBoards.php">
+		<operation>
+			<search position="before"><![CDATA[
+			'no_children' => true,]]></search>
+			<add><![CDATA[
+			'disabled_signatures' => false,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$context['board']['is_recycle'] = !empty($modSettings['recycle_enable']) && !empty($modSettings['recycle_board']) && $modSettings['recycle_board'] == $context['board']['id'];]]></search>
+			<add><![CDATA[
+		$context['board']['disabled_signatures'] = !empty($boards[$_REQUEST['boardid']]['disabled_signatures']);]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+	// We might need this to hide links to certain areas.
+	$context['can_manage_permissions'] = allowedTo('manage_permissions');]]></search>
+			<add><![CDATA[
+	$context['signature_enabled'] = substr($modSettings['signature_settings'], 0, 1) == 1;]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$boardOptions['posts_count'] = isset($_POST['count']);]]></search>
+			<add><![CDATA[
+		$boardOptions['disabled_signatures'] = isset($_POST['disabled_signatures']);]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Subs-Boards.php">
+		<operation>
+			<search position="after"><![CDATA[
+	// Do the updates (if any).]]></search>
+			<add><![CDATA[
+	if (isset($boardOptions['disabled_signatures']))
+	{
+		$boardUpdates[] = 'disabled_signatures = {int:disabled_signatures}';
+		$boardUpdateParameters['disabled_signatures'] = $boardOptions['disabled_signatures'] ? 1 : 0;
+	}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'inherit_permissions' => true,]]></search>
+			<add><![CDATA[
+		'disabled_signatures' => false,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			b.num_posts, b.num_topics]]></search>
+			<add><![CDATA[, b.disabled_signatures]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				'redirect' => $row['redirect'],]]></search>
+			<add><![CDATA[
+				'disabled_signatures' => $row['disabled_signatures'],]]></add>
 		</operation>
 	</file>
 
@@ -487,6 +570,35 @@ function template_profile_avatar_select()
 					', $context['member']['signature'][$i], '
 				</div>';
 	}
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/ManageBoards.template.php">
+		<operation>
+			<search position="replace"><![CDATA[
+					</div>';
+
+	if (!empty($context['board']['is_recycle']))
+]]></search>
+			<add><![CDATA[
+					</div>';
+
+	if (!empty($context['signature_enabled']))
+		echo '
+					<div id="disable_signatures_div">
+						<dl class="settings">
+							<dt>
+								<strong>', $txt['mboards_disabled_signatures'], ':</strong><br />
+								<span class="smalltext">', $txt['mboards_disabled_signatures_desc'], '</span><br />
+							</dt>
+							<dd>
+								<input type="checkbox" name="disabled_signatures"', $context['board']['disabled_signatures'] ? ' checked="checked"' : '', ' class="input_check" />
+							</dd>
+						</dl>
+					</div>';
+
+	if (!empty($context['board']['is_recycle']))
 ]]></add>
 		</operation>
 	</file>

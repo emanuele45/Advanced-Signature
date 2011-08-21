@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>emanuele:advanced_signature</id>
 	<name>Advanced Signature</name>
-	<version>0.1.10</version>
+	<version>0.2.0</version>
 	<type>modification</type>
 	<install for="1.1.12 - 1.1.14">
 		<modification>modification.xml</modification>
@@ -12,6 +12,7 @@
 		<modification>lang_1.1.xml</modification>
 		<modification>lang_1.1-UTF8.xml</modification>
 		<code>installScript.php</code>
+		<readme type="inline" parsebbc="true">Please note that the development of this mod for the SMF 1.1.x series has stopped. Starting with Advanced Signature 0.2.0, all the new features are available only for SMF 2.0</readme>
 	</install>
 	<uninstall for="1.1.12 - 1.1.14">
 		<modification reverse="true">modification.xml</modification>
@@ -31,6 +32,7 @@ Additionally, to completely remove any trace of the mod (including database entr
 		<modification>lang_2.0.xml</modification>
 		<modification>lang_2.0-UTF8.xml</modification>
 		<database>installScript_SMF2.php</database>
+		<database>installHooks.php</database>
 		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />
 		<redirect url="?action=admin;area=featuresettings;sa=sig" />
 	</install>
@@ -41,6 +43,7 @@ Additionally, to completely remove any trace of the mod (including database entr
 		<modification reverse="true">lang_2.0.xml</modification>
 		<modification reverse="true">lang_2.0-UTF8.xml</modification>
 		<database reverse="true">installScript_SMF2.php</database>
+		<code>installHooks.php</code>
 		<readme type="inline" parsebbc="true">[b]Pleae note[/b] before uninstall the mod please go to [i]Admin > Configuration > Features and Options > Signatures[/i], set the maximum number of signature to 1 and use SMF tool to apply rules to all existing signatures.</readme>
 		<remove-file name="$sourcedir/Subs-AdvancedSignature.php" />
 	</uninstall>
