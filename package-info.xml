@@ -5,26 +5,20 @@
 	<name>Advanced Signature</name>
 	<version>0.2.0</version>
 	<type>modification</type>
-	<install for="2.0">
+	<install for="2.0 - 2.0.99">
+		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />
 		<modification>modification_SMF2.xml</modification>
 		<modification>lang.xml</modification>
 		<modification>lang-UTF8.xml</modification>
-		<modification>lang_2.0.xml</modification>
-		<modification>lang_2.0-UTF8.xml</modification>
-		<database>installScript_SMF2.php</database>
-		<database>installHooks.php</database>
-		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />
+		<database>install.php</database>
 		<redirect url="?action=admin;area=featuresettings;sa=sig" />
 	</install>
-	<uninstall for="2.0">
+	<uninstall for="2.0 - 2.0.99">
+		<remove-file name="$sourcedir/Subs-AdvancedSignature.php" />
 		<modification reverse="true">modification_SMF2.xml</modification>
 		<modification reverse="true">lang.xml</modification>
 		<modification reverse="true">lang-UTF8.xml</modification>
-		<modification reverse="true">lang_2.0.xml</modification>
-		<modification reverse="true">lang_2.0-UTF8.xml</modification>
-		<database reverse="true">installScript_SMF2.php</database>
-		<code>installHooks.php</code>
+		<code>install.php</code>
 		<readme type="inline" parsebbc="true">[b]Pleae note[/b] before uninstall the mod please go to [i]Admin > Configuration > Features and Options > Signatures[/i], set the maximum number of signature to 1 and use SMF tool to apply rules to all existing signatures.</readme>
-		<remove-file name="$sourcedir/Subs-AdvancedSignature.php" />
 	</uninstall>
 </package-info>
