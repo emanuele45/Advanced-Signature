@@ -8,58 +8,58 @@ elseif (!defined('SMF')) // If we are outside SMF and can't find SSI.php, then t
 updateSettings(array('max_numberofSignatures' => 1));
 
 db_extend('packages');
-$smcFunc['db_add_column'] (
-			'{db_prefix}messages', 
-			array(
-			      'name' => 'signature_id',
-			      'type' => 'TINYINT',
-			      'default' => '0'
-			),
-			array(),
-			'ignore'
-		);
+$smcFunc['db_add_column'](
+	'{db_prefix}messages', 
+	array(
+		'name' => 'signature_id',
+		'type' => 'TINYINT',
+		'default' => '0'
+	),
+	array(),
+	'ignore'
+);
 
-$smcFunc['db_add_column'] (
-			'{db_prefix}members', 
-			array(
-			      'name' => 'random_signature',
-			      'type' => 'TINYINT',
-			      'default' => '0'
-			),
-			array(),
-			'ignore'
-		);
+$smcFunc['db_add_column'](
+	'{db_prefix}members', 
+	array(
+		'name' => 'random_signature',
+		'type' => 'TINYINT',
+		'default' => '0'
+	),
+	array(),
+	'ignore'
+);
 
-$smcFunc['db_add_column'] (
-			'{db_prefix}personal_messages', 
-			array(
-			      'name' => 'signature_id',
-			      'type' => 'TINYINT',
-			      'default' => '0'
-			),
-			array(),
-			'ignore'
-		);
+$smcFunc['db_add_column'](
+	'{db_prefix}personal_messages', 
+	array(
+		'name' => 'signature_id',
+		'type' => 'TINYINT',
+		'default' => '0'
+	),
+	array(),
+	'ignore'
+);
 
-$smcFunc['db_add_column'] (
-			'{db_prefix}topics', 
-			array(
-			      'name' => 'disabled_signatures',
-			      'type' => 'TINYINT',
-			      'default' => '0'
-			),
-			array(),
-			'ignore'
-		);
-$smcFunc['db_add_column'] (
-			'{db_prefix}boards', 
-			array(
-			      'name' => 'disabled_signatures',
-			      'type' => 'TINYINT',
-			      'default' => '0'
-			),
-			array(),
-			'ignore'
-		);
+$smcFunc['db_add_column'](
+	'{db_prefix}topics', 
+	array(
+		'name' => 'disabled_signatures',
+		'type' => 'TINYINT',
+		'default' => '0'
+	),
+	array(),
+	'ignore'
+);
+$smcFunc['db_add_column'](
+	'{db_prefix}boards', 
+	array(
+		'name' => 'disabled_signatures',
+		'type' => 'TINYINT',
+		'default' => '0'
+	),
+	array(),
+	'ignore'
+);
 
 ?>
