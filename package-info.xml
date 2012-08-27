@@ -1,9 +1,21 @@
 <?xml version="1.0"?>
 <!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<license><![CDATA[
+/**
+ * Advanced Signature (advsig)
+ *
+ * @package advsig
+ * @author emanuele
+ * @copyright 2010 - 2012 emanuele, Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 0.3.0
+ */
+	]]></license>
 	<id>emanuele:advanced_signature</id>
 	<name>Advanced Signature</name>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<type>modification</type>
 	<install for="2.0 - 2.0.99">
 		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />

@@ -1,4 +1,15 @@
 <?php
+/**
+ * Advanced Signature (advsig)
+ *
+ * @package advsig
+ * @author emanuele
+ * @copyright 2010 - 2012 emanuele, Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 0.3.0
+ */
+
 if (!defined('SMF'))
 	die('Hacking attempt...');
 

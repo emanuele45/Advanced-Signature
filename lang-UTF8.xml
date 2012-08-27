@@ -1,9 +1,21 @@
 <?xml version="1.0"?>
 <!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<license><![CDATA[
+/**
+ * Advanced Signature (advsig)
+ *
+ * @package advsig
+ * @author emanuele
+ * @copyright 2010 - 2012 emanuele, Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 0.3.0
+ */
+	]]></license>
 
 	<id>emanuele:advanced_signature</id>
-	<version>0.1.10</version>
+	<version>0.3.0</version>
 
 	<file name="$languagedir/Modifications.english.php">
 		<operation>

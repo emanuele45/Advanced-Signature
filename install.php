@@ -1,4 +1,15 @@
 <?php
+/**
+ * Advanced Signature (advsig)
+ *
+ * @package advsig
+ * @author emanuele
+ * @copyright 2010 - 2012 emanuele, Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 0.3.0
+ */
+
 global $hooks, $mod_name;
 $hooks = array(
 	'integrate_pre_include', '$sourcedir/Subs-AdvancedSignature.php',
