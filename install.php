@@ -12,12 +12,12 @@
 
 global $hooks, $mod_name;
 $hooks = array(
-	'integrate_pre_include', '$sourcedir/Subs-AdvancedSignature.php',
-	'integrate_load_permissions', 'advsig_permissions',
-	'integrate_mod_buttons', 'advsig_add_topic_button',
-	'integrate_actions', 'advsig_create_action',
-	'integrate_general_mod_settings', 'advsig_add_modsettings',
-	'integrate_load_theme', 'advsig_set_modsettings',
+	'integrate_pre_include' => '$sourcedir/Subs-AdvancedSignature.php',
+	'integrate_load_permissions' => 'advsig_permissions',
+	'integrate_mod_buttons' => 'advsig_add_topic_button',
+	'integrate_actions' => 'advsig_create_action',
+	'integrate_general_mod_settings' => 'advsig_add_modsettings',
+	'integrate_load_theme' => 'advsig_set_modsettings',
 );
 $mod_name = 'Advanced Signature';
 

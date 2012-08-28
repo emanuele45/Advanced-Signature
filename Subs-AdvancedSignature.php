@@ -160,7 +160,7 @@ function advsig_getSignatureByID ($ID, $member_id = false)
 {
 	global $modav_member, $memberContext;
 
-	if (!empty($member_id) && !empty($memberContext[$member_id])
+	if (!empty($member_id) && !empty($memberContext[$member_id]))
 	{
 		$modav_member['username'] = $memberContext[$member_id]['username'];
 		$modav_member['name'] = $memberContext[$member_id]['name'];
