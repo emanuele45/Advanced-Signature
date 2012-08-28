@@ -94,13 +94,13 @@
 			<search position="before"><![CDATA[
 		$memberContext[$message['id_member']]['is_topic_starter'] = $message['id_member'] == $context['topic_starter_id'];]]></search>
 			<add><![CDATA[
-		if($memberContext[$message['id_member']]['random_signature']==-2){
-			$message['signature_id']=-2;}
-		elseif($memberContext[$message['id_member']]['random_signature']==-1 && $message['signature_id']!=-2){
-			$message['signature_id']=-1;}
-		else{
-			$message['signature_id']=$message['signature_id'];}
-		$memberContext[$message['id_member']]['signature'] = advsig_getSignatureByID($message['signature_id'],$memberContext[$message['id_member'] ]);]]></add>
+		if ($memberContext[$message['id_member']]['random_signature'] == -2)
+			$message['signature_id'] = -2;
+		elseif ($memberContext[$message['id_member']]['random_signature'] == -1 && $message['signature_id'] != -2)
+			$message['signature_id'] = -1;
+		else
+			$message['signature_id'] = $message['signature_id'];
+		$memberContext[$message['id_member']]['signature'] = advsig_getSignatureByID($message['signature_id'],$message['id_member']);]]></add>
 		</operation>
 		<operation>
 			<search position="replace"><![CDATA[
@@ -388,13 +388,13 @@ foreach($signs as $sign){
 	// Censor all the important text...
 ]]></search>
 			<add><![CDATA[
-	if($memberContext[$message['id_member_from']]['random_signature']==-2){
-		$message['signature_id']=-2;}
-	elseif($memberContext[$message['id_member_from']]['random_signature']==-1 && $message['signature_id']!=-2){
-		$message['signature_id']=-1;}
-	else{
-		$message['signature_id']=$message['signature_id'];}
-	$memberContext[$message['id_member_from']]['signature'] = advsig_getSignatureByID($message['signature_id'], $memberContext[$message['id_member_from']]);
+	if ($memberContext[$message['id_member_from']]['random_signature'] == -2)
+		$message['signature_id'] = -2;
+	elseif ($memberContext[$message['id_member_from']]['random_signature'] == -1 && $message['signature_id'] != -2)
+		$message['signature_id'] = -1;
+	else
+		$message['signature_id'] = $message['signature_id'];
+	$memberContext[$message['id_member_from']]['signature'] = advsig_getSignatureByID($message['signature_id'],$message['id_member_from']);
 ]]></add>
 		</operation>
 	</file>

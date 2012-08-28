@@ -105,23 +105,23 @@ function advsig_stripSignatures ($sign_t, $id=false)
 		return $signs;
 }
 
-function advsig_countSignatures ($member = false)
+function advsig_countSignatures ($member_id = false)
 {
 	global $context, $user_info;
 
-	$member = !empty($member['id']) ? $member['id'] : $user_info['id'];
-	if (!isset($context['user_avail_signatures'][$member]))
-		advsig_getSignatures($member);
+	$member_id = !empty($member_id) ? $member_id : $user_info['id'];
+	if (!isset($context['user_avail_signatures'][$member_id]))
+		advsig_getSignatures($member_id);
 
-	return count($context['user_avail_signatures'][$member]);
+	return count($context['user_avail_signatures'][$member_id]);
 }
 
-function advsig_getSignatures ($member = false)
+function advsig_getSignatures ($member_id = false)
 {
-	global $smcFunc, $user_info, $context;
+	global $smcFunc, $user_info, $context, $memberContext;
 
-	$member = !empty($member['id']) ? $member['id'] : $user_info['id'];
-	if (!isset($context['user_avail_signatures'][$member]))
+	$member_id = !empty($member_id) ? $member_id : $user_info['id'];
+	if (!isset($context['user_avail_signatures'][$member_id]))
 	{
 		$request = $smcFunc['db_query']('', '
 			SELECT signature
@@ -129,14 +129,14 @@ function advsig_getSignatures ($member = false)
 			WHERE id_member = {int:member_id}
 			LIMIT 1',
 			array(
-				'member_id' => $member,
+				'member_id' => $member_id,
 			)
 		);
 		$row = $smcFunc['db_fetch_assoc']($request);
 		$smcFunc['db_free_result']($request);
-		$context['user_avail_signatures'][$member] = advsig_stripSignatures($row['signature']);
+		$context['user_avail_signatures'][$member_id] = advsig_stripSignatures($row['signature']);
 	}
-	return $context['user_avail_signatures'][$member];
+	return $context['user_avail_signatures'][$member_id];
 }
 
 function advsig_getSignatureID ($name, $poster_ID = false)
@@ -156,20 +156,20 @@ function advsig_getSignatureID ($name, $poster_ID = false)
 	}
 }
 
-function advsig_getSignatureByID ($ID, $member = false)
+function advsig_getSignatureByID ($ID, $member_id = false)
 {
-	global $modav_member;
+	global $modav_member, $memberContext;
 
-	if (!empty($member))
+	if (!empty($member_id) && !empty($memberContext[$member_id])
 	{
-		$modav_member['username'] = $member['username'];
-		$modav_member['name'] = $member['name'];
-		$modav_member['href'] = empty($member['href']) ? '' : $member['href'];
-		$modav_member['website']['url'] = empty($member['website']['url']) ? '' : $member['website']['url'];
-		$modav_member['website']['title'] = empty($member['website']['title']) ? '' : $member['website']['title'];
+		$modav_member['username'] = $memberContext[$member_id]['username'];
+		$modav_member['name'] = $memberContext[$member_id]['name'];
+		$modav_member['href'] = empty($memberContext[$member_id]['href']) ? '' : $memberContext[$member_id]['href'];
+		$modav_member['website']['url'] = empty($memberContext[$member_id]['website']['url']) ? '' : $memberContext[$member_id]['website']['url'];
+		$modav_member['website']['title'] = empty($memberContext[$member_id]['website']['title']) ? '' : $memberContext[$member_id]['website']['title'];
 	}
 
-	$signs = advsig_getSignatures($member);
+	$signs = advsig_getSignatures($member_id);
 
 	if (empty($signs))
 		return '';
