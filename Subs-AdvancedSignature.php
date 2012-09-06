@@ -91,12 +91,18 @@ function advsig_stripSignatures ($sign_t, $id = false)
 			$modSettings['default_signature']
 		);
 
+	if (empty($sign_t))
+		return array();
+
 	if (is_array($sign_t))
 		$signs = $sign_t;
 	elseif (strpos($sign_t, '[ENDOFSIGNATURE]') !== false)
 		$signs = explode('[ENDOFSIGNATURE]', $sign_t);
 	else
-		$signs = unserialize($sign_t);
+		$signs = @unserialize($sign_t);
+
+	if (empty($signs))
+		$signs = array();
 
 	$signs = array_filter($signs);
 
