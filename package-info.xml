@@ -15,11 +15,11 @@
 	]]></license>
 	<id>emanuele:advanced_signature</id>
 	<name>Advanced Signature</name>
-	<version>0.3.0</version>
+	<version>0.3.0 beta 1</version>
 	<type>modification</type>
 	<install for="2.0 - 2.0.99">
 		<require-file name="Subs-AdvancedSignature.php" destination="$sourcedir" />
-		<modification>modification_SMF2.xml</modification>
+		<modification>modification.xml</modification>
 		<modification>lang.xml</modification>
 		<modification>lang-UTF8.xml</modification>
 		<database>install.php</database>
@@ -27,7 +27,7 @@
 	</install>
 	<uninstall for="2.0 - 2.0.99">
 		<remove-file name="$sourcedir/Subs-AdvancedSignature.php" />
-		<modification reverse="true">modification_SMF2.xml</modification>
+		<modification reverse="true">modification.xml</modification>
 		<modification reverse="true">lang.xml</modification>
 		<modification reverse="true">lang-UTF8.xml</modification>
 		<code>install.php</code>
