@@ -68,7 +68,7 @@ function advsig_create_action (&$actionArray)
  *
  */
 
-function advsig_stripSignatures ($sign_t, $id=false)
+function advsig_stripSignatures ($sign_t, $id = false)
 {
 	global $modav_member, $modSettings;
 
@@ -91,15 +91,21 @@ function advsig_stripSignatures ($sign_t, $id=false)
 			$modSettings['default_signature']
 		);
 
-	$signs = explode('[ENDOFSIGNATURE]', $sign_t);
-	$signs=array_filter($signs);
+	if (is_array($sign_t))
+		$signs = $sign_t;
+	elseif (strpos($sign_t, '[ENDOFSIGNATURE]') !== false)
+		$signs = explode('[ENDOFSIGNATURE]', $sign_t);
+	else
+		$signs = unserialize($sign_t);
+
+	$signs = array_filter($signs);
 
 	if ($id !== false)
 	{
 		if (isset($signs[$id]))
 			return $signs[$id];
 		else
-			return $signs(0);
+			return $signs[0];
 	}
 	else
 		return $signs;
@@ -213,7 +219,7 @@ function advsig_prepare_signatures ($is_post = false, $poster_ID = false, $signa
 	for ($i = 0; $i < $signs; $i++)
 		$context['avail_signatures'][$i] = array(
 			'name' => 'signature_' . $i,
-			'label' => $txt['signature'] . ' ' . ($i+1),
+			'label' => sprintf($txt['signature_numb'], $i + 1),
 			'selected' => $chosen_signature == 'signature_' . $i || $signature_id==$i ? 1 : 0
 		);
 }
@@ -257,7 +263,7 @@ function advsig_disable_in_current_topic ()
 }
 
 /* ADMIN */
-function advsig_restoreSignatures (&$sig_t, $admins=false)
+function advsig_restoreSignatures (&$sig_t, $admins = false)
 {
 	global $modSettings, $smcFunc;
 
@@ -299,7 +305,7 @@ function advsig_restoreSignatures (&$sig_t, $admins=false)
 				unset($sigs[$i]);
 		}
 
-	$sig_t = implode('[ENDOFSIGNATURE]', $sigs);
+	$sig_t = serialize($sigs);
 	}
 }
 

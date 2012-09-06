@@ -17,12 +17,13 @@
 	<id>emanuele:advanced_signature</id>
 	<version>0.3.0</version>
 
-	<file name="$languagedir/Modifications.english.php">
+	<file name="$languagedir/Modifications.english-utf8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
 $txt['random_signature'] = 'Use a random signature';
 $txt['signature'] = isset($txt['signature']) ? $txt['signature'] : 'Signature';
+$txt['signature_numb'] = 'Signature %1$s';
 $txt['nosignature'] = 'No signature';
 $txt['randomsignature'] = 'Random signature';
 $txt['restoresignatures'] = 'Reset to single signature per user';
@@ -44,7 +45,7 @@ $txt['mboards_disabled_signatures_desc'] = 'Do not show members\' signatures for
 ]]></add>
 		</operation>
 	</file>
-	<file name="$languagedir/Help.english.php">
+	<file name="$languagedir/Help.english-utf8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
@@ -62,12 +63,13 @@ $helptxt['default_signature'] = '
 		</operation>
 	</file>
 
-	<file name="$languagedir/Modifications.italian.php" error="skip">
+	<file name="$languagedir/Modifications.italian-utf8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
 $txt['random_signature'] = 'Usa una firma casuale';
 $txt['signature'] = isset($txt['signature']) ? $txt['signature'] : 'Firma';
+$txt['signature_numb'] = 'Firma numero %1$s';
 $txt['nosignature'] = 'Nessuna firma';
 $txt['randomsignature'] = 'Firma casuale';
 $txt['restoresignatures'] = 'Reimposta una sola firma per utente';
@@ -89,7 +91,7 @@ $txt['mboards_disabled_signatures_desc'] = 'Le firme degli utenti non verranno m
 ]]></add>
 		</operation>
 	</file>
-	<file name="$languagedir/Help.italian.php" error="skip">
+	<file name="$languagedir/Help.italian-utf8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[

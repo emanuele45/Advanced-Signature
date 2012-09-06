@@ -23,6 +23,7 @@
 			<add><![CDATA[
 $txt['random_signature'] = 'Use a random signature';
 $txt['signature'] = isset($txt['signature']) ? $txt['signature'] : 'Signature';
+$txt['signature_numb'] = 'Signature %1$s';
 $txt['nosignature'] = 'No signature';
 $txt['randomsignature'] = 'Random signature';
 $txt['restoresignatures'] = 'Reset to single signature per user';
@@ -68,6 +69,7 @@ $helptxt['default_signature'] = '
 			<add><![CDATA[
 $txt['random_signature'] = 'Usa una firma casuale';
 $txt['signature'] = isset($txt['signature']) ? $txt['signature'] : 'Firma';
+$txt['signature_numb'] = 'Firma numero %1$s';
 $txt['nosignature'] = 'Nessuna firma';
 $txt['randomsignature'] = 'Firma casuale';
 $txt['restoresignatures'] = 'Reimposta una sola firma per utente';

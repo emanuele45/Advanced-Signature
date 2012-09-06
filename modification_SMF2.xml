@@ -61,6 +61,27 @@
 			mem.openid_uri, mem.birthdate, mem.icq, mem.aim, mem.yim, mem.msn, mem.posts, mem.last_login, mem.karma_good,]]></add>
 		</operation>
 		<operation>
+			<search position="replace"><![CDATA[
+	// Censor everything.
+	censorText($profile['signature']);]]></search>
+			<add><![CDATA[
+	$profile['signature'] = advsig_stripSignatures($profile['signature']);
+	// Censor everything.
+	foreach ($profile['signature'] as &$sign)
+		censorText($sign);]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	$profile['signature'] = str_replace(array("\n", "\r"), array('<br />', ''), $profile['signature']);
+	$profile['signature'] = parse_bbc($profile['signature'], true, 'sig' . $profile['id_member']);]]></search>
+			<add><![CDATA[
+	foreach ($profile['signature'] as $k => $sign)
+	{
+		$profile['signature'][$k] = str_replace(array("\n", "\r"), array('<br />', ''), $sign);
+		$profile['signature'][$k] = parse_bbc($sign, true, 'sig' . $profile['id_member']);
+	}]]></add>
+		</operation>
+		<operation>
 			<search position="before"><![CDATA[
 		'signature' => $profile['signature'],]]></search>
 			<add><![CDATA[
@@ -187,20 +208,26 @@ function profileValidateSignature(&$value)
 {
 	global $sourcedir, $modSettings, $smcFunc, $txt;
 
-	$value='';
 	$signs = array();
-	for ($i=0; $i<$modSettings['max_numberofSignatures']; $i++){
-		if (isset($_POST['signature' . $i]) && !($_POST['signature' . $i]==""))
-		{
-			$signs[$i] = $_POST['signature' . $i];
-		}
-	}
+	for ($i = 0; $i < $modSettings['max_numberofSignatures']; $i++)
+		if (!empty($_POST['signature'][$i]))
+			$signs[$i] = $_POST['signature'][$i];
 
-	$signs = advsig_stripSignatures(implode('[ENDOFSIGNATURE]',$signs));
+	$value = '';
+	$signs = advsig_stripSignatures($signs);
 
 	require_once($sourcedir . '/Subs-Post.php');
-foreach($signs as $sign){
+foreach ($signs as $i => $sign)
+{
 	// Admins can do whatever they hell they want!
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+			$_POST['signature'] = trim(htmlspecialchars($smcFunc['substr']($unparsed_signature, 0, $sig_limits[1]), ENT_QUOTES));
+]]></search>
+			<add><![CDATA[
+			$_POST['signature'][$i] = trim(htmlspecialchars($smcFunc['substr']($unparsed_signature, 0, $sig_limits[1]), ENT_QUOTES));
 ]]></add>
 		</operation>
 		<operation>
@@ -233,9 +260,9 @@ foreach($signs as $sign){
 	preparsecode($sign);
 }
 
-	$value = implode('[ENDOFSIGNATURE]', $signs);
+	$value = serialize($signs);
 	if ($smcFunc['strlen']($value) > 65534)
-		$value = addslashes($smcFunc['truncate'](stripslashes($value), 65534));
+		return 'signature_max_length';
 
 ]]></add>
 		</operation>
@@ -257,6 +284,16 @@ foreach($signs as $sign){
 			'permission' => 'profile_extra',
 			'label' => $txt['choose_signature'],
 		),]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	$context['member']['signature'] = empty($cur_profile['signature']) ? '' : str_replace(array('<br />', '<', '>', '"', '\''), array("\n", '&lt;', '&gt;', '&quot;', '&#039;'), $cur_profile['signature']);
+]]></search>
+			<add><![CDATA[
+	$context['member']['signature'] = empty($cur_profile['signature']) ? '' : advsig_stripSignatures($cur_profile['signature']);
+	foreach ($context['member']['signature'] as $key => $val)
+		$context['member']['signature'][$key] = empty($val) ? '' : str_replace(array('<br />', '<', '>', '"', '\''), array("\n", '&lt;', '&gt;', '&quot;', '&#039;'), $val);
+]]></add>
 		</operation>
 	</file>
 
@@ -444,27 +481,28 @@ foreach($signs as $sign){
 ]]></search>
 			<add><![CDATA[
 	global $txt, $context, $settings,$modSettings;
-	$context['member']['signature'] = advsig_stripSignatures($context['member']['signature']);
+
 	echo '
 							<dt>
 								<input type="hidden" name="signature" value="1" />
 							</dt>';
 
-	for ($i=0; $i<$modSettings['max_numberofSignatures']; $i++){
+	for ($i = 0; $i < $modSettings['max_numberofSignatures']; $i++)
+	{
 		echo '
 							<dt>
-								<strong>', $txt['signature'], ' ', $i+1 , ':</strong><br />
+								<strong>', sprintf($txt['signature_numb'], $i + 1), ':</strong><br />
 								<span class="smalltext">', $txt['sig_info'], '</span><br />
 								<br />';
 
 		if ($context['show_spellchecking'])
 			echo '
-								<input type="button" value="', $txt['spell_check'], '" onclick="spellCheck(\'creator\', \'signature', $i , '\');" class="button_submit" />';
+								<input type="button" value="', $txt['spell_check'], '" onclick="spellCheck(\'creator\', \'signature[', $i , ']\');" class="button_submit" />';
 
 		echo '
 							</dt>
 							<dd>
-								<textarea class="editor" onkeyup="calcCharLeft_', $i , '();" name="signature', $i , '" rows="5" cols="50">', isset($context['member']['signature'][$i]) ? $context['member']['signature'][$i] : '' , '</textarea><br />';
+								<textarea class="editor" onkeyup="calcCharLeft_', $i , '();" name="signature[', $i , ']" rows="5" cols="50">', isset($context['member']['signature'][$i]) ? $context['member']['signature'][$i] : '' , '</textarea><br />';
 
 		// If there is a limit at all!
 		if (!empty($context['signature_limits']['max_length']))
@@ -578,7 +616,7 @@ function template_profile_avatar_select()
 		if ($context['signature_enabled'] && !empty($context['member']['signature']))
 			echo '
 				<div class="signature">
-					<h5>', $txt['signature'], ' ' , $i+1 , ':</h5>
+					<h5>', sprintf($txt['signature_numb'], $i + 1), ':</h5>
 					', $context['member']['signature'][$i], '
 				</div>';
 	}
