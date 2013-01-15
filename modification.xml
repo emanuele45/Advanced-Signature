@@ -211,7 +211,7 @@ function profileValidateSignature(&$value)
 	$signs = array();
 	for ($i = 0; $i < $modSettings['max_numberofSignatures']; $i++)
 		if (!empty($_POST['signature'][$i]))
-			$signs[$i] = $_POST['signature'][$i];
+			$signs[] = $_POST['signature'][$i];
 
 	$value = '';
 	$signs = advsig_stripSignatures($signs);
