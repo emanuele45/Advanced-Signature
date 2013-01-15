@@ -122,18 +122,24 @@ function advsig_countSignatures ($member_id = false)
 	global $context, $user_info;
 
 	$member_id = !empty($member_id) ? $member_id : $user_info['id'];
-	if (!isset($context['user_avail_signatures'][$member_id]))
-		advsig_getSignatures($member_id);
 
-	return count($context['user_avail_signatures'][$member_id]);
+	return advsig_getSignatures($member_id, true);
 }
 
-function advsig_getSignatures ($member_id = false)
+function advsig_getSignatures ($member_id = false, $count = false)
 {
-	global $smcFunc, $user_info, $context, $memberContext;
+	global $smcFunc, $user_info;
+	static $user_avail_signatures;
+
+	if ($count)
+	{
+		if (!isset($user_avail_signatures[$member_id]))
+			advsig_getSignatures($member_id);
+		return count($user_avail_signatures[$member_id]);
+	}
 
 	$member_id = !empty($member_id) ? $member_id : $user_info['id'];
-	if (!isset($context['user_avail_signatures'][$member_id]))
+	if (!isset($user_avail_signatures[$member_id]))
 	{
 		$request = $smcFunc['db_query']('', '
 			SELECT signature
@@ -146,9 +152,9 @@ function advsig_getSignatures ($member_id = false)
 		);
 		$row = $smcFunc['db_fetch_assoc']($request);
 		$smcFunc['db_free_result']($request);
-		$context['user_avail_signatures'][$member_id] = advsig_stripSignatures($row['signature']);
+		$user_avail_signatures[$member_id] = advsig_stripSignatures($row['signature']);
 	}
-	return $context['user_avail_signatures'][$member_id];
+	return $user_avail_signatures[$member_id];
 }
 
 function advsig_getSignatureID ($name, $poster_ID = false)
